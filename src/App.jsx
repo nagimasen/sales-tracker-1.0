@@ -52,6 +52,102 @@ const QuantityModal = ({ product, onConfirm, onClose }) => {
           >
             +
           </button>
+          {activeTab === 'accounting' && (
+            <div>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem'}}>
+                <h3 style={{fontWeight: 'bold', fontSize: '1.25rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0}}>
+                  <FileSpreadsheet size={24} color="#DC2626" />
+                  Accounting & Reports
+                </h3>
+                <button
+                  onClick={exportToExcel}
+                  style={{padding: '0.75rem 1.5rem', backgroundColor: '#16A34A', color: '#ffffff', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                >
+                  <Download size={20} />
+                  Export to Excel
+                </button>
+              </div>
+
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1.5rem'}}>
+                <div style={{backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem'}}>
+                  <h4 style={{fontSize: '0.875rem', color: '#6b7280', margin: '0 0 0.5rem 0'}}>Total Revenue</h4>
+                  <p style={{fontSize: '2rem', fontWeight: 'bold', color: '#10B981', margin: 0}}>₱{totalSales.toFixed(2)}</p>
+                </div>
+                <div style={{backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem'}}>
+                  <h4 style={{fontSize: '0.875rem', color: '#6b7280', margin: '0 0 0.5rem 0'}}>Inventory Value</h4>
+                  <p style={{fontSize: '2rem', fontWeight: 'bold', color: '#DC2626', margin: 0}}>
+                    ₱{products.reduce((sum, p) => sum + (p.price * p.stock), 0).toFixed(2)}
+                  </p>
+                </div>
+                <div style={{backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem'}}>
+                  <h4 style={{fontSize: '0.875rem', color: '#6b7280', margin: '0 0 0.5rem 0'}}>Total Units Sold</h4>
+                  <p style={{fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6', margin: 0}}>
+                    {sales.reduce((sum, s) => sum + (s.quantity || 1), 0)}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem', marginBottom: '1rem'}}>
+                <h4 style={{fontSize: '1.125rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem'}}>Revenue Breakdown</h4>
+                <div style={{overflowX: 'auto'}}>
+                  <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                    <thead>
+                      <tr style={{borderBottom: '2px solid #e5e7eb'}}>
+                        <th style={{textAlign: 'left', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Product</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Units Sold</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Revenue</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>% of Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(salesByProduct)
+                        .sort(([, a], [, b]) => b.total - a.total)
+                        .map(([productId, data]) => (
+                          <tr key={productId} style={{borderBottom: '1px solid #f3f4f6'}}>
+                            <td style={{padding: '0.75rem', color: '#111827', fontWeight: '500'}}>{data.productName}</td>
+                            <td style={{padding: '0.75rem', textAlign: 'right', color: '#6b7280'}}>{data.totalUnits}</td>
+                            <td style={{padding: '0.75rem', textAlign: 'right', color: '#10B981', fontWeight: '500'}}>₱{data.total.toFixed(2)}</td>
+                            <td style={{padding: '0.75rem', textAlign: 'right', color: '#6b7280'}}>{((data.total / totalSales) * 100).toFixed(1)}%</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div style={{backgroundColor: '#ffffff', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem'}}>
+                <h4 style={{fontSize: '1.125rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem'}}>Current Inventory</h4>
+                <div style={{overflowX: 'auto'}}>
+                  <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                    <thead>
+                      <tr style={{borderBottom: '2px solid #e5e7eb'}}>
+                        <th style={{textAlign: 'left', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Product</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Code</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Price</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Stock</th>
+                        <th style={{textAlign: 'right', padding: '0.75rem', color: '#6b7280', fontSize: '0.875rem', fontWeight: '500'}}>Total Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map(product => (
+                        <tr key={product.id} style={{borderBottom: '1px solid #f3f4f6'}}>
+                          <td style={{padding: '0.75rem', color: '#111827', fontWeight: '500'}}>{product.name}</td>
+                          <td style={{padding: '0.75rem', textAlign: 'right', color: '#6b7280', fontSize: '0.875rem'}}>{product.code}</td>
+                          <td style={{padding: '0.75rem', textAlign: 'right', color: '#6b7280'}}>₱{product.price.toFixed(2)}</td>
+                          <td style={{padding: '0.75rem', textAlign: 'right', color: product.stock < 10 ? '#ef4444' : '#6b7280', fontWeight: product.stock < 10 ? 'bold' : 'normal'}}>
+                            {product.stock}
+                          </td>
+                          <td style={{padding: '0.75rem', textAlign: 'right', color: '#10B981', fontWeight: '500'}}>
+                            ₱{(product.price * product.stock).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         <div style={{display: 'flex', gap: '0.5rem'}}>
@@ -627,15 +723,56 @@ const SalesTracker = () => {
       acc[sale.productId] = {
         productName: sale.productName,
         count: 0,
+        totalUnits: 0,
         total: 0,
         sales: []
       };
     }
     acc[sale.productId].count++;
+    acc[sale.productId].totalUnits += (sale.quantity || 1);
     acc[sale.productId].total += sale.price;
     acc[sale.productId].sales.push(sale);
     return acc;
   }, {});
+
+  const exportToExcel = () => {
+    let csv = 'Sales Report\n\n';
+    csv += 'SUMMARY\n';
+    csv += `Total Revenue,₱${totalSales.toFixed(2)}\n`;
+    csv += `Today's Revenue,₱${todayRevenue.toFixed(2)}\n`;
+    csv += `Total Products,${products.length}\n`;
+    csv += `Total Transactions,${sales.length}\n\n\n`;
+    
+    csv += 'DETAILED SALES TRANSACTIONS\n';
+    csv += 'Date & Time,Product Name,Quantity,Unit Price,Total Price\n';
+    sales.forEach(sale => {
+      csv += `${sale.timestamp},${sale.productName},${sale.quantity || 1},₱${(sale.unitPrice || sale.price).toFixed(2)},₱${sale.price.toFixed(2)}\n`;
+    });
+    
+    csv += '\n\nSALES BY PRODUCT\n';
+    csv += 'Product Name,Units Sold,Total Revenue,Number of Transactions\n';
+    Object.entries(salesByProduct)
+      .sort(([, a], [, b]) => b.total - a.total)
+      .forEach(([, data]) => {
+        csv += `${data.productName},${data.totalUnits},₱${data.total.toFixed(2)},${data.count}\n`;
+      });
+    
+    csv += '\n\nCURRENT INVENTORY\n';
+    csv += 'Product Name,Code,Price,Stock,Total Value\n';
+    products.forEach(p => {
+      csv += `${p.name},${p.code},₱${p.price.toFixed(2)},${p.stock},₱${(p.price * p.stock).toFixed(2)}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `sales-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <>
@@ -655,7 +792,7 @@ const SalesTracker = () => {
 
         <div style={{backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 10, overflowX: 'auto'}}>
           <div style={{maxWidth: '1200px', margin: '0 auto', display: 'flex'}}>
-            {['dashboard', 'products', 'sales', 'analytics'].map(tab => (
+            {['dashboard', 'products', 'sales', 'analytics', 'accounting'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -842,7 +979,7 @@ const SalesTracker = () => {
                           <h4 style={{fontWeight: 'bold', fontSize: '1.125rem', color: '#111827', margin: 0}}>{data.productName}</h4>
                           <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
                             <span style={{fontSize: '0.875rem', color: '#6b7280', backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px'}}>
-                              {data.count} sale{data.count !== 1 ? 's' : ''}
+                              {data.totalUnits} unit{data.totalUnits !== 1 ? 's' : ''} sold
                             </span>
                             <span style={{fontSize: '1.125rem', fontWeight: 'bold', color: '#10B981'}}>₱{data.total.toFixed(2)}</span>
                           </div>
