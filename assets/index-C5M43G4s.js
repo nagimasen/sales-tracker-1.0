@@ -150,7 +150,7 @@ Error generating stack: `+a.message+`
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
     background-color: #f9fafb !important;
     color: #111827 !important;
   }
