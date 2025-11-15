@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Package, TrendingUp, DollarSign, BarChart3, Plus, Search, X, Upload, Trash2, Undo2, PieChart, Edit, Save } from 'lucide-react';
+import { Camera, Package, TrendingUp, DollarSign, BarChart3, Plus, Search, X, Upload, Trash2, Undo2, PieChart, Edit, Save, Download, FileSpreadsheet } from 'lucide-react';
 
 const lightModeStyle = `
   * {
